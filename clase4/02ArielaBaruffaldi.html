@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script type="text/javascript" src="https://unpkg.com/rxjs@%5E7/dist/bundles/rxjs.umd.min.js"></script>
+  <script type="text/javascript">
+
+
+    const { Observable, fromEvent, map } = rxjs
+
+    function reverseString(str) {
+      return str.split("").reverse().join("")
+    }
+
+    window.onload = function () {
+      const input = document.getElementById('entrada')
+      const output = document.getElementById('salida')
+
+      const miCustomObservable = new Observable((observable) => {
+        input.addEventListener("input", (e) => {
+          console.log(e.data)
+          if (input.value == "error")
+            observable.error("Escribiste error")
+
+          if (input.value == "complete")
+            observable.complete()
+
+          if (e.data == null) {
+            salida = output.value.substring(1)
+
+          }
+          else {
+            salida = e.data
+          }
+          observable.next(salida)
+
+        })
+      })
+
+      const miFuncionNext = (data) => {
+        output.value = data
+      }
+      const miFuncionComplete = () => {
+        console.log("Escribiste Complete")
+        input.disabled = true
+        input.value = ""
+        output.value = ""
+        miCustomMapeado.unsubscribe()
+      }
+      const miFuncionError = (msg) => {
+        console.log(`Error ${msg}`)
+        input.disabled = true
+        input.value = ""
+        output.value = ""
+        miCustomMapeado.unsubscribe()
+      }
+      const handler = {
+        next: miFuncionNext,
+        error: miFuncionError,
+        complete: miFuncionComplete,
+      }
+
+
+
+      const miCustomMapeado = miCustomObservable.pipe(map((data) => {
+        newData = reverseString(input.value)
+        return newData
+      }))
+        .subscribe(handler)
+
+
+
+
+
+
+      setTimeout(() => {
+        console.log("termino la escucha")
+        miCustomMapeado.unsubscriber
+        input.disabled = true
+        input.value = ""
+        output.value = ""
+      }, 30000)
+    }
+  </script>
+</head>
+
+<body>
+  <input type="text" value="" id='entrada'>
+  <br />
+  <input type="text" value="" id='salida'>
+</body>
+
+</html>
